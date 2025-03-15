@@ -1,7 +1,7 @@
 import numpy as np
+#Maybe implement the intercept for slightly more accurate results.
+#Implement ridge regression
 
-
-#Load data
 A = np.genfromtxt("data/case1Data.csv", delimiter=",")
 y = A[1:,0]
 A = A[1:,1:]

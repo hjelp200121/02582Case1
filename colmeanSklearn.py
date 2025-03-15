@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-#Load data
 A = np.genfromtxt("data/case1Data.csv", delimiter=",")
 y = A[1:,0]
 A = A[1:,1:]
