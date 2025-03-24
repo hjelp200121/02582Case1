@@ -5,13 +5,13 @@ from sklearn import linear_model
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn import preprocessing, metrics
-from sklearn.metrics import mean_squared_error
 
 # ignore sklearn warnings
 def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+# load data
 data_path = "data/cleaned_data_small.csv"
 df = pd.read_csv(data_path)
 
@@ -63,8 +63,14 @@ for i, l1_ratio in enumerate(l1_ratios):
         MSE_array[i, j] = metrics.mean_squared_error(y_test, y_est)
         R2_array[i, j] = model.score(X_test, y_test)
 
-print(np.min(MSE_array))
-print(np.max(R2_array))
+# determine indices of optimal parameter values
+min_MSE_idx = np.unravel_index(MSE_array.argmin(), MSE_array.shape)
+max_R2_idx = np.unravel_index(R2_array.argmax(), R2_array.shape)
+
+# print MSE with optimal parameter values
+print(MSE_array[min_MSE_idx])
+print(R2_array[max_R2_idx])
+
 
 
 # # vi skal lave cross validation enten "manuelt" eller med en sklearn funktion
@@ -74,8 +80,3 @@ print(np.max(R2_array))
 # }
 # cv_grid = GridSearchCV(estimator = model, param_grid = param_grid, cv = 5, verbose=2, n_jobs=-1)
 # cv_grid.fit(X, y)
-
-
-
-
-
