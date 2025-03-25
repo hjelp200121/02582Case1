@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn import linear_model
 from sklearn import preprocessing, metrics
+from sklearn.tree import DecisionTreeRegressor
 import random
 
 # ignore sklearn warnings
@@ -29,7 +30,7 @@ def standardize(X_train, X_test):
     return X_train, X_test
 
 
-###### ElasticNet parameter selection with cross validation
+###### Decision tree parameter selection with cross validation
 
 # load data
 data_path = "data/cleaned_data_small.csv"
@@ -43,8 +44,8 @@ N, p = X.shape
 K = 5
 
 # parameter intervals to test
-l1_ratios = np.linspace(0.3, 1, 15)
-alphas = np.linspace(0.005, 0.7, 50)
+min_samples_leaf = np.array(range(1, 50))
+criterion = np.array(["squared_error", "friedman_mse", "absolute_error", "poisson"])
 
 # CV index vector
 indices = np.zeros(N)
@@ -54,10 +55,10 @@ for i in range(len(indices)):
 # randomly permute CV index vector 
 random.shuffle(indices)
 
-MSE_CV_array = np.zeros((len(l1_ratios), len(alphas), K))
+MSE_CV_array = np.zeros((len(min_samples_leaf), len(criterion), K))
 
-for i in range(len(l1_ratios)):
-    for j in range(len(alphas)):
+for i in range(len(min_samples_leaf)):
+    for j in range(len(criterion)):
         
         for u in range(K):
             
@@ -70,7 +71,7 @@ for i in range(len(l1_ratios)):
             # standardize continuous data
             X_train, X_test = standardize(X_train, X_test)
 
-            model = linear_model.ElasticNet(l1_ratio=l1_ratios[i], alpha=alphas[j])
+            model = DecisionTreeRegressor(min_samples_leaf=min_samples_leaf[i], criterion=criterion[j])
             model.fit(X_train, y_train)
             y_est = model.predict(X_test)
 
@@ -83,6 +84,6 @@ MSE_CV_array = np.mean(MSE_CV_array, axis=2)
 min_MSE_idx = np.unravel_index(MSE_CV_array.argmin(), MSE_CV_array.shape)
 
 # print MSE with optimal parameter values
-print(f"Optimal l1 ratio: {l1_ratios[min_MSE_idx[0]]}")
-print(f"Optimal alpha value: {alphas[min_MSE_idx[1]]}")
-print(f"Smallest CV error: {MSE_CV_array[min_MSE_idx]}")
+print(f"Optimal min_samples_leaf value: {min_samples_leaf[min_MSE_idx[0]]}")
+print(f"Optimal criterion: {criterion[min_MSE_idx[1]]}")
+print(f"CV error with optimal parameters: {MSE_CV_array[min_MSE_idx]}")
