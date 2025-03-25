@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing, metrics
+from sklearn.svm import SVR
 import random
 
-from colmeanLSTSQ import LSTSQ_self
-from colmeanSklearn import LSTSQ_sklearn
-from support_vector_regression import SVR_method
+def SVR_method(X_train, y_train, X_test):
+    svr_model = SVR(kernel="linear")
+    svr_model.fit(X_train, y_train)
+    return svr_model.predict(X_test)
 
 def standardize(X_train, X_test):
     
@@ -35,8 +37,6 @@ if __name__ == "__main__":
 
     # number of cross validation folds
     folds = 5
-    # number of models
-    models = 3
 
     # CV index vector
     indices = np.zeros(N)
@@ -44,29 +44,33 @@ if __name__ == "__main__":
         indices[i] = i % folds
     random.shuffle(indices)
 
-    RMSE_CV_array = np.zeros((folds,models))
+    kernels = ["linear", "poly", "rbf", "sigmoid"]
+    
+    RMSE_CV_array = np.zeros((folds,len(kernels)))
+    # if poly:
+    #     degree = [1,2,3,4,5,6]
+    # if rbf, poly or sigmoid:
+    #     gamma = ["scale", "auto", floats]
+    # if poly or sigmoid:
+    #     coef0 = [floats]
+    # C = [floats]
+    # epsilon = [floats]
+    for u in range(len(kernels)):
+        kernel = kernels[u]
+        for i in range(folds):
+            # train/test split
+            X_train = X[i != indices]
+            X_test = X[i == indices]
+            y_train = y[i != indices]
+            y_test = y[i == indices]
 
-    for i in range(folds):
-        # train/test split
-        X_train = X[i != indices]
-        X_test = X[i == indices]
-        y_train = y[i != indices]
-        y_test = y[i == indices]
+            # standardize continuous data
+            X_train, X_test = standardize(X_train, X_test)
 
-        # standardize continuous data
-        X_train, X_test = standardize(X_train, X_test)
-
-        #model 1
-        y_est1 = LSTSQ_self(X_train, y_train, X_test)
-        RMSE_CV_array[i, 0] = metrics.root_mean_squared_error(y_test, y_est1)
-
-        #model 2
-        y_est2 = LSTSQ_sklearn(X_train, y_train, X_test)
-        RMSE_CV_array[i, 1] = metrics.root_mean_squared_error(y_test, y_est2)
-
-        #model 3
-        y_est3 = SVR_method(X_train, y_train, X_test)
-        RMSE_CV_array[i, 2] = metrics.root_mean_squared_error(y_test, y_est3)
+            svr_model = SVR(kernel=kernel)
+            svr_model.fit(X_train, y_train)
+            y_est = svr_model.predict(X_test)
+            RMSE_CV_array[i,u] = metrics.root_mean_squared_error(y_test, y_est)
 
     # compute 2D cross validation error array as seen on slide 29 week 2
     RMSE_CV_array = np.mean(RMSE_CV_array, axis=0)
