@@ -70,6 +70,9 @@ for i in range(len(l1_ratios)):
             # standardize continuous data
             X_train, X_test = standardize(X_train, X_test)
 
+            X_train = X_train.astype("float64")
+            X_test = X_test.astype("float64")
+
             model = linear_model.ElasticNet(l1_ratio=l1_ratios[i], alpha=alphas[j])
             model.fit(X_train, y_train)
             y_est = model.predict(X_test)

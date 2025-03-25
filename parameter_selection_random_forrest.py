@@ -70,6 +70,9 @@ for i in range(len(n_estimators)):
             # standardize continuous data
             X_train, X_test = standardize(X_train, X_test)
 
+            X_train = X_train.astype("float64")
+            X_test = X_test.astype("float64")
+
             model = RandomForestRegressor(n_estimators=n_estimators[i], max_features=max_features[j])
             model.fit(X_train, y_train)
             y_est = model.predict(X_test)

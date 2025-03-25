@@ -71,6 +71,9 @@ for i in range(len(min_samples_leaf)):
             # standardize continuous data
             X_train, X_test = standardize(X_train, X_test)
 
+            X_train = X_train.astype("float64")
+            X_test = X_test.astype("float64")
+
             model = DecisionTreeRegressor(min_samples_leaf=min_samples_leaf[i], criterion=criterion[j])
             model.fit(X_train, y_train)
             y_est = model.predict(X_test)
