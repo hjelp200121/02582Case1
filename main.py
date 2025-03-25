@@ -25,6 +25,7 @@ def standardize(X_train, X_test):
     return X_train, X_test
 
 if __name__ == "__main__":
+
     data_path = "data/cleaned_data_small.csv"
     df = pd.read_csv(data_path)
 
@@ -55,6 +56,9 @@ if __name__ == "__main__":
         # standardize continuous data
         X_train, X_test = standardize(X_train, X_test)
 
+        X_train = X_train.astype("float64")
+        X_test = X_test.astype("float64")
+        
         #model 1
         y_est1 = LSTSQ_self(X_train, y_train, X_test)
         MSE_CV_array[i, 0] = metrics.root_mean_squared_error(y_test, y_est1)
