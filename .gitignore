@@ -2,3 +2,4 @@ data/
 project_description_files/
 test.py
 deep.py
+*.txt

@@ -5,7 +5,7 @@ from sklearn.svm import SVR
 import random
 
 def SVR_method(X_train, y_train, X_test):
-    svr_model = SVR(kernel="linear")
+    svr_model = SVR(kernel="poly",epsilon=1,C=1.2,coef0=0.5,gamma=0.001,degree=3)
     svr_model.fit(X_train, y_train)
     return svr_model.predict(X_test)
 

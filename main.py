@@ -38,39 +38,43 @@ if __name__ == "__main__":
     folds = 5
     # number of models
     models = 3
-
-    # CV index vector
-    indices = np.zeros(N)
-    for i in range(len(indices)):
-        indices[i] = i % folds
-    random.shuffle(indices)
+    # number of outer iterations
+    iters = 5000
 
     RMSE_CV_array = np.zeros((folds,models))
+    for j in range(iters):
+        # CV index vector
+        indices = np.zeros(N)
+        for i in range(len(indices)):
+            indices[i] = i % folds
+        random.shuffle(indices)
 
-    for i in range(folds):
-        # train/test split
-        X_train = X[i != indices]
-        X_test = X[i == indices]
-        y_train = y[i != indices]
-        y_test = y[i == indices]
+        for i in range(folds):
+            # train/test split
+            X_train = X[i != indices]
+            X_test = X[i == indices]
+            y_train = y[i != indices]
+            y_test = y[i == indices]
 
-        # standardize continuous data
-        X_train, X_test = standardize(X_train, X_test)
+            # standardize continuous data
+            X_train, X_test = standardize(X_train, X_test)
 
-        X_train = X_train.astype("float64")
-        X_test = X_test.astype("float64")
+            X_train = X_train.astype("float64")
+            X_test = X_test.astype("float64")
+            
+            #model 1
+            y_est1 = LSTSQ_self(X_train, y_train, X_test)
+            RMSE_CV_array[i, 0] += metrics.root_mean_squared_error(y_test, y_est1)
+
+            #model 2
+            y_est2 = LSTSQ_sklearn(X_train, y_train, X_test)
+            RMSE_CV_array[i, 1] += metrics.root_mean_squared_error(y_test, y_est2)
+
+            #model 3
+            y_est3 = SVR_method(X_train, y_train, X_test)
+            RMSE_CV_array[i, 2] += metrics.root_mean_squared_error(y_test, y_est3)
         
-        #model 1
-        y_est1 = LSTSQ_self(X_train, y_train, X_test)
-        RMSE_CV_array[i, 0] = metrics.root_mean_squared_error(y_test, y_est1)
-
-        #model 2
-        y_est2 = LSTSQ_sklearn(X_train, y_train, X_test)
-        RMSE_CV_array[i, 1] = metrics.root_mean_squared_error(y_test, y_est2)
-
-        #model 3
-        y_est3 = SVR_method(X_train, y_train, X_test)
-        RMSE_CV_array[i, 2] = metrics.root_mean_squared_error(y_test, y_est3)
+    RMSE_CV_array = RMSE_CV_array/iters
 
     # compute 2D cross validation error array as seen on slide 29 week 2
     RMSE_CV_array = np.mean(RMSE_CV_array, axis=0)
