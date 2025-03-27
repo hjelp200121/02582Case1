@@ -1,5 +1,6 @@
 data/
 project_description_files/
+figures/
 test.py
 deep.py
 *.txt
