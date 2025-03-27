@@ -5,35 +5,21 @@ from sklearn import linear_model
 from sklearn import preprocessing, metrics
 import random
 
+from helper_functions import standardize, impute_data
+
 # ignore sklearn warnings
 def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
-def standardize(X_train, X_test):
-    
-    # split train/test splits into continuous and categorical
-    X_train_cont = X_train[:, 0:95].copy()
-    X_train_cate = X_train[:, 95:].copy()
-    X_test_cont = X_test[:, 0:95].copy()
-    X_test_cate = X_test[:, 95:].copy()
-
-    # standardize only continuous data
-    X_train_cont = preprocessing.scale(X_train_cont)
-    X_test_cont = preprocessing.scale(X_test_cont)
-
-    # reassemble train/test split
-    X_train = np.concatenate((X_train_cont, X_train_cate), axis=1)
-    X_test = np.concatenate((X_test_cont, X_test_cate), axis=1)
-
-    return X_train, X_test
-
 
 ###### ElasticNet parameter selection with cross validation
 
 # load data
-data_path = "data/cleaned_data_small.csv"
+# data_path = "data/cleaned_data_small.csv"
+data_path = "data/case1Data.csv"
 df = pd.read_csv(data_path)
+column_names = df.columns[1:]
 
 y = np.array(df[df.columns[0]])
 X = np.array(df[df.columns[1:]])
@@ -44,7 +30,7 @@ K = 5
 
 # parameter intervals to test
 l1_ratios = np.linspace(0.3, 1, 15)
-alphas = np.linspace(0.005, 0.7, 50)
+alphas = np.linspace(0.005, 0.7, 20)
 
 # CV index vector
 indices = np.zeros(N)
@@ -66,6 +52,9 @@ for i in range(len(l1_ratios)):
             X_test = X[u == indices]
             y_train = y[u != indices]
             y_test = y[u == indices]
+
+            # impute train and test data
+            X_train, X_test = impute_data(X_train, X_test, column_names)
 
             # standardize continuous data
             X_train, X_test = standardize(X_train, X_test)
