@@ -17,14 +17,15 @@ plt.imsave("figures/nan_bool.png", nan_bool_array)
 
 
 # histograms of selected features
-fig, axes = plt.subplots(1, 5, figsize=(17, 3))
-plt.subplots_adjust(wspace=0.1)
+fig, axes = plt.subplots(1, 5, figsize=(14, 3))
+plt.subplots_adjust(wspace=0.1, left=0.01, right=0.99)
+
 con_features = [11, 19, 65, 80, 91]
 
 for i, feature in enumerate(con_features):
-    axes[i].hist(X[:, feature], bins=10, color="#3ead6f")
+    axes[i].hist(X[:, feature], bins=10, color="#440154FF")
     axes[i].set_xticks([])
     axes[i].set_yticks([])
     axes[i].set_title(f"Feature x_{feature}")
 
-plt.savefig("figures/5_features_hist.png")
+plt.savefig("figures/5_features_hist.pdf")
