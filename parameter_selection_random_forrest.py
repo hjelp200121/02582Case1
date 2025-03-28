@@ -12,6 +12,11 @@ def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+def random_forrest_method(X_train, y_train, X_test):
+    model = RandomForestRegressor(n_estimators=92 , max_features=88)
+    model.fit(X_train, y_train)
+    
+    return model.predict(X_test)
 
 ###### Random forrest parameter selection with cross validation
 

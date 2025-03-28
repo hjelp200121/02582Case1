@@ -13,6 +13,12 @@ def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+def decision_tree_method(X_train, y_train, X_test):
+    model = DecisionTreeRegressor(min_samples_leaf=7, criterion="poisson")
+    model.fit(X_train, y_train)
+    
+    return model.predict(X_test)
+
 
 ###### Decision tree parameter selection with cross validation
 

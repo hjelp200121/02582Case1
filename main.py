@@ -6,6 +6,9 @@ import random
 from colmeanLSTSQ import LSTSQ_self
 from colmeanSklearn import LSTSQ_sklearn
 from support_vector_regression import SVR_method
+from parameter_selection_decision_tree import decision_tree_method
+from parameter_selection_elastic_net import elastic_net_method
+from parameter_selection_random_forrest import random_forrest_method
 
 from helper_functions import *
 
@@ -22,7 +25,7 @@ if __name__ == "__main__":
     # number of cross validation folds
     folds = 5
     # number of models
-    models = 2
+    models = 5
     # number of outer iterations
     iters = 50
 
@@ -57,6 +60,18 @@ if __name__ == "__main__":
             #model 3
             y_est = SVR_method(X_train, y_train, X_test)
             RMSE_CV_array[i, 1] += metrics.root_mean_squared_error(y_test, y_est)
+
+            #model 4
+            y_est = decision_tree_method(X_train, y_train, X_test)
+            RMSE_CV_array[i, 2] += metrics.root_mean_squared_error(y_test, y_est)
+
+            #model 5
+            y_est = elastic_net_method(X_train, y_train, X_test)
+            RMSE_CV_array[i, 3] += metrics.root_mean_squared_error(y_test, y_est)
+
+            #model 6
+            y_est = random_forrest_method(X_train, y_train, X_test)
+            RMSE_CV_array[i, 4] += metrics.root_mean_squared_error(y_test, y_est)
         
     RMSE_CV_array = RMSE_CV_array/iters
 

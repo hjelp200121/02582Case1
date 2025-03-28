@@ -12,6 +12,11 @@ def warn(*args, **kwargs):
     pass
 warnings.warn = warn
 
+def elastic_net_method(X_train, y_train, X_test):
+    model = linear_model.ElasticNet(l1_ratio=1.0, alpha=0.762)
+    model.fit(X_train, y_train)
+    
+    return model.predict(X_test)
 
 ###### ElasticNet parameter selection with cross validation
 
@@ -30,7 +35,7 @@ K = 5
 
 # parameter intervals to test
 l1_ratios = np.linspace(0.3, 1, 15)
-alphas = np.linspace(0.005, 0.7, 20)
+alphas = np.linspace(0.005, 2, 30)
 
 # CV index vector
 indices = np.zeros(N)
@@ -46,7 +51,7 @@ for i in range(len(l1_ratios)):
     for j in range(len(alphas)):
         
         for u in range(K):
-            
+
             # train/test split
             X_train = X[u != indices]
             X_test = X[u == indices]
