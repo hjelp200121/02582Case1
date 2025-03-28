@@ -29,3 +29,18 @@ for i, feature in enumerate(con_features):
     axes[i].set_title(f"Feature x_{feature}")
 
 plt.savefig("figures/5_features_hist.pdf")
+
+
+
+# correlation analysis
+corr_mat = df[df.columns[1:96]].corr()
+T = np.triu(corr_mat.to_numpy(), 1)
+n = T.shape[0]
+
+print(np.sum(T > 0.5))
+
+plt.imshow(corr_mat)
+plt.colorbar()
+plt.xticks([])
+plt.yticks([])
+plt.savefig("figures/corr_matrix.pdf")
