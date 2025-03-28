@@ -4,32 +4,17 @@ from sklearn import preprocessing, metrics
 from sklearn.svm import SVR
 import random
 
+from helper_functions import *
+
 def SVR_method(X_train, y_train, X_test):
-    svr_model = SVR(kernel="poly",epsilon=1,C=1.2,coef0=0.5,gamma=0.001,degree=3)
+    svr_model = SVR(kernel="linear",epsilon=0.0007,C=1.927)
     svr_model.fit(X_train, y_train)
     return svr_model.predict(X_test)
 
-def standardize(X_train, X_test):
-    
-    # split train/test splits into continuous and categorical
-    X_train_cont = X_train[:, 0:95].copy()
-    X_train_cate = X_train[:, 95:].copy()
-    X_test_cont = X_test[:, 0:95].copy()
-    X_test_cate = X_test[:, 95:].copy()
-
-    # standardize only continuous data
-    X_train_cont = preprocessing.scale(X_train_cont)
-    X_test_cont = preprocessing.scale(X_test_cont)
-
-    # reassemble train/test split
-    X_train = np.concatenate((X_train_cont, X_train_cate), axis=1)
-    X_test = np.concatenate((X_test_cont, X_test_cate), axis=1)
-
-    return X_train, X_test
-
 if __name__ == "__main__":
-    data_path = "data/cleaned_data_small.csv"
+    data_path = "data/case1Data.csv"
     df = pd.read_csv(data_path)
+    column_names = df.columns[1:]
 
     y = np.array(df[df.columns[0]])
     X = np.array(df[df.columns[1:]])
@@ -64,8 +49,10 @@ if __name__ == "__main__":
             y_train = y[i != indices]
             y_test = y[i == indices]
 
-            # standardize continuous data
+            X_train, X_test = impute_data(X_train, X_test, column_names)
             X_train, X_test = standardize(X_train, X_test)
+            X_train = X_train.astype("float64")
+            X_test = X_test.astype("float64")
 
             svr_model = SVR(kernel=kernel)
             svr_model.fit(X_train, y_train)
