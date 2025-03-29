@@ -9,11 +9,13 @@ from parameter_selection_elastic_net import elastic_net_method
 from support_vector_regression import SVR_nohot_method, SVR_method
 
 def committee_method(X_train, y_train, X_test):
-    #y_est1 = LSTSQ_sklearn(X_train, y_train, X_test)
-    y_est2 = elastic_net_method(X_train, y_train, X_test)
-    y_est3 = SVR_method(X_train, y_train, X_test)
+    models = [SVR_method, elastic_net_method]
+    num_models = len(models)
+    y_est = np.zeros(X_test.shape[0])
+    for i in range(num_models):
+        y_est += models[i](X_train, y_train, X_test)
     
-    return (y_est2 + y_est3)/2
+    return y_est/num_models
 
 if __name__ == "__main__":
     data_path = "data/case1Data.csv"

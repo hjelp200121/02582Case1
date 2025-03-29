@@ -29,7 +29,7 @@ if __name__ == "__main__":
     models = [LSTSQ_sklearn, SVR_method, elastic_net_method, committee_method, SVR_nohot_method]
     num_models = len(models)
     # number of outer iterations
-    iters = 1000
+    iters = 10
 
     RMSE_CV_array = np.zeros((folds,num_models))
     for j in range(iters):
@@ -64,4 +64,5 @@ if __name__ == "__main__":
 
     # compute 2D cross validation error array as seen on slide 29 week 2
     RMSE_CV_array = np.mean(RMSE_CV_array, axis=0)
-    print(RMSE_CV_array)
+    for i in range(len(RMSE_CV_array)):
+        print(models[i].__name__, ":", RMSE_CV_array[i])
