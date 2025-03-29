@@ -69,7 +69,8 @@ if __name__ == "__main__":
                     X_train, X_test = impute_data(X_train, X_test, column_names)
 
                     # standardize continuous data
-                    X_train, X_test = standardize(X_train, X_test)
+                    X_train = standardize(X_train)
+                    X_test = standardize(X_test)
 
                     X_train = X_train.astype("float64")
                     X_test = X_test.astype("float64")

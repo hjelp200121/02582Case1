@@ -4,23 +4,19 @@ import numpy as np
 from sklearn import preprocessing
 
 
-def standardize(X_train, X_test):
+def standardize(X):
     
     # split train/test splits into continuous and categorical
-    X_train_cont = X_train[:, 0:95].copy()
-    X_train_cate = X_train[:, 95:].copy()
-    X_test_cont = X_test[:, 0:95].copy()
-    X_test_cate = X_test[:, 95:].copy()
-
+    X_cont = X[:, 0:95].copy()
+    X_cate = X[:, 95:].copy()
+   
     # standardize only continuous data
-    X_train_cont = preprocessing.scale(X_train_cont)
-    X_test_cont = preprocessing.scale(X_test_cont)
+    X_cont = preprocessing.scale(X_cont)
 
     # reassemble train/test split
-    X_train = np.concatenate((X_train_cont, X_train_cate), axis=1)
-    X_test = np.concatenate((X_test_cont, X_test_cate), axis=1)
+    X = np.concatenate((X_cont, X_cate), axis=1)
 
-    return X_train.astype("float64"), X_test.astype("float64")
+    return X.astype("float64")
 
 def impute_data(X_train, X_test, column_names):
 
@@ -55,7 +51,7 @@ def impute_data(X_train, X_test, column_names):
     X_train = df1.to_numpy()
     X_test = df2.to_numpy()
     
-    return X_train.astype("float64"), X_test.astype("float64")
+    return X_train.astype("float64"), X_test.astype("float64"), np.array(df1.columns)
 
 def impute_data_nohot(X_train, X_test, column_names):
 

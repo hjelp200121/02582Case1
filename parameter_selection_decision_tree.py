@@ -14,7 +14,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def decision_tree_method(X_train, y_train, X_test):
-    model = DecisionTreeRegressor(min_samples_leaf=7, criterion="poisson")
+    model = DecisionTreeRegressor(min_samples_leaf=34, criterion="absolute_error")
     model.fit(X_train, y_train)
     
     return model.predict(X_test)
@@ -69,7 +69,8 @@ if __name__ == "__main__":
                     X_train, X_test = impute_data(X_train, X_test, column_names)
 
                     # standardize continuous data
-                    X_train, X_test = standardize(X_train, X_test)
+                    X_train = standardize(X_train)
+                    X_test = standardize(X_test)
 
                     X_train = X_train.astype("float64")
                     X_test = X_test.astype("float64")

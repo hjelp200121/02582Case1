@@ -13,7 +13,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 def elastic_net_method(X_train, y_train, X_test):
-    model = linear_model.ElasticNet(l1_ratio=1.0, alpha=0.762)
+    model = linear_model.ElasticNet(l1_ratio=0.95, alpha=0.635)
     model.fit(X_train, y_train)
     
     return model.predict(X_test)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     N, p = X.shape
 
     # number of iterations
-    iters = 50
+    iters = 1
 
     # number of cross validation folds
     K = 5
@@ -70,7 +70,8 @@ if __name__ == "__main__":
                     X_train, X_test = impute_data(X_train, X_test, column_names)
 
                     # standardize continuous data
-                    X_train, X_test = standardize(X_train, X_test)
+                    X_train = standardize(X_train)
+                    X_test = standardize(X_test)
 
                     X_train = X_train.astype("float64")
                     X_test = X_test.astype("float64")
