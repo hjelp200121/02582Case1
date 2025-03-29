@@ -18,9 +18,9 @@ def random_forrest_method(X_train, y_train, X_test):
     
     return model.predict(X_test)
 
-if __name__ == "__main__":
-    ###### Random forrest parameter selection with cross validation
 
+###### Random forrest parameter selection with cross validation
+if __name__ == "__main__":
     # load data
     # data_path = "data/cleaned_data_small.csv"
     data_path = "data/case1Data.csv"
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     K = 5
 
     # parameter intervals to test
-    n_estimators = np.array(range(90, 101))
+    n_estimators = np.array(range(90, 110))
     max_features = np.array(range(70, 100))
 
     # CV index vector
