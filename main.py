@@ -5,10 +5,11 @@ import random
 
 from colmeanLSTSQ import LSTSQ_self
 from colmeanSklearn import LSTSQ_sklearn
-from support_vector_regression import SVR_method
+from support_vector_regression import SVR_nohot_method, SVR_method
 from parameter_selection_decision_tree import decision_tree_method
 from parameter_selection_elastic_net import elastic_net_method
 from parameter_selection_random_forrest import random_forrest_method
+from Committee import committee_method
 
 from helper_functions import *
 
@@ -25,11 +26,12 @@ if __name__ == "__main__":
     # number of cross validation folds
     folds = 5
     # number of models
-    models = 5
+    models = [LSTSQ_sklearn, SVR_method, elastic_net_method, committee_method, SVR_nohot_method]
+    num_models = len(models)
     # number of outer iterations
-    iters = 50
+    iters = 1000
 
-    RMSE_CV_array = np.zeros((folds,models))
+    RMSE_CV_array = np.zeros((folds,num_models))
     for j in range(iters):
         # CV index vector
         indices = np.zeros(N)
@@ -44,34 +46,19 @@ if __name__ == "__main__":
             y_train = y[i != indices]
             y_test = y[i == indices]
 
+            X_train_nohot, X_test_nohot = impute_data_nohot(X_train, X_test, column_names)
+            X_train_nohot, X_test_nohot = standardize(X_train_nohot, X_test_nohot)
+
             X_train, X_test = impute_data(X_train, X_test, column_names)
             X_train, X_test = standardize(X_train, X_test)
-            X_train = X_train.astype("float64")
-            X_test = X_test.astype("float64")
-            
-            #model 1
-            # y_est1 = LSTSQ_self(X_train, y_train, X_test)
-            # RMSE_CV_array[i, 0] += metrics.root_mean_squared_error(y_test, y_est1)
 
-            #model 2
-            y_est = LSTSQ_sklearn(X_train, y_train, X_test)
-            RMSE_CV_array[i, 0] += metrics.root_mean_squared_error(y_test, y_est)
-
-            #model 3
-            y_est = SVR_method(X_train, y_train, X_test)
-            RMSE_CV_array[i, 1] += metrics.root_mean_squared_error(y_test, y_est)
-
-            #model 4
-            y_est = decision_tree_method(X_train, y_train, X_test)
-            RMSE_CV_array[i, 2] += metrics.root_mean_squared_error(y_test, y_est)
-
-            #model 5
-            y_est = elastic_net_method(X_train, y_train, X_test)
-            RMSE_CV_array[i, 3] += metrics.root_mean_squared_error(y_test, y_est)
-
-            #model 6
-            y_est = random_forrest_method(X_train, y_train, X_test)
-            RMSE_CV_array[i, 4] += metrics.root_mean_squared_error(y_test, y_est)
+            for k in range(num_models):
+                if models[k] == SVR_nohot_method:
+                    y_est = models[k](X_train_nohot, y_train, X_test_nohot)
+                    RMSE_CV_array[i, k] += metrics.root_mean_squared_error(y_test, y_est)
+                else:
+                    y_est = models[k](X_train, y_train, X_test)
+                    RMSE_CV_array[i, k] += metrics.root_mean_squared_error(y_test, y_est)
         
     RMSE_CV_array = RMSE_CV_array/iters
 

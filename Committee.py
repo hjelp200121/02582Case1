@@ -1,15 +1,19 @@
 import pandas as pd
 import numpy as np
-from sklearn import preprocessing, metrics
-from sklearn.svm import SVR
+from sklearn import metrics
 import random
 
 from helper_functions import *
+from colmeanSklearn import LSTSQ_sklearn
+from parameter_selection_elastic_net import elastic_net_method
+from support_vector_regression import SVR_nohot_method, SVR_method
 
-def SVR_method(X_train, y_train, X_test):
-    svr_model = SVR(kernel="linear",epsilon=0.0007,C=1.927)
-    svr_model.fit(X_train, y_train)
-    return svr_model.predict(X_test)
+def committee_method(X_train, y_train, X_test):
+    #y_est1 = LSTSQ_sklearn(X_train, y_train, X_test)
+    y_est2 = elastic_net_method(X_train, y_train, X_test)
+    y_est3 = SVR_method(X_train, y_train, X_test)
+    
+    return (y_est2 + y_est3)/2
 
 if __name__ == "__main__":
     data_path = "data/case1Data.csv"
@@ -25,7 +29,7 @@ if __name__ == "__main__":
     # number of committee members
     members = 5
     # number of iterations
-    iters = 50
+    iters = 100
     
     RMSE_CV_array = np.zeros((folds))
 
@@ -48,27 +52,13 @@ if __name__ == "__main__":
             X_train = X_train.astype("float64")
             X_test = X_test.astype("float64")
 
-            model1 = SVR(kernel="linear",epsilon=0.0007,C=1.927)
-            model1.fit(X_train, y_train)
-            y_est1 = model1.predict(X_test)
+            #y_est1 = LSTSQ_sklearn(X_train, y_train, X_test)
 
-            model2 = SVR(kernel="linear",epsilon=0.0002459415757983914,C=1.933673481591938)
-            model2.fit(X_train, y_train)
-            y_est2 = model2.predict(X_test)
+            y_est2 = elastic_net_method(X_train, y_train, X_test)
 
-            model3 = SVR(kernel="linear",epsilon=0.0012805761099426477,C=1.9239136509323487)
-            model3.fit(X_train, y_train)
-            y_est3 = model3.predict(X_test)
-
-            model4 = SVR(kernel="linear",epsilon=0.0010147836207166155,C=1.9301790632080356)
-            model4.fit(X_train, y_train)
-            y_est4 = model4.predict(X_test)
-
-            model5 = SVR(kernel="linear",epsilon=0.003122790641129501,C=1.932012451038065)
-            model5.fit(X_train, y_train)
-            y_est5 = model5.predict(X_test)
-
-            y_est = (y_est1 + y_est2 + y_est3 + y_est4 + y_est5)/5
+            y_est3 = SVR_nohot_method(X_train, y_train, X_test)
+            
+            y_est = (y_est2 + y_est3)/2
             RMSE_CV_array[i] += metrics.root_mean_squared_error(y_test, y_est)
 
     # compute 2D cross validation error array as seen on slide 29 week 2

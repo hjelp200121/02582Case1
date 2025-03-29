@@ -11,6 +11,11 @@ def SVR_method(X_train, y_train, X_test):
     svr_model.fit(X_train, y_train)
     return svr_model.predict(X_test)
 
+def SVR_nohot_method(X_train, y_train, X_test):
+     svr_model = SVR(kernel="poly",epsilon=1,C=1.2,coef0=0.5,gamma=0.001,degree=3)
+     svr_model.fit(X_train, y_train)
+     return svr_model.predict(X_test)
+
 if __name__ == "__main__":
     data_path = "data/case1Data.csv"
     df = pd.read_csv(data_path)
