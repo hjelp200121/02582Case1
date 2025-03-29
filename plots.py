@@ -68,7 +68,13 @@ def EN_feature_selection():
     model.fit(X_train, y_train)
 
     non_0_feature_idx = model.coef_ != 0
-    print(column_names[non_0_feature_idx])
-    print(model.coef_[non_0_feature_idx])
+    non_0_coefs = model.coef_[non_0_feature_idx]
+    ordered_coef_idx = np.flip(np.argsort(np.abs(non_0_coefs)))
+
+    # print EN features in order of most important features
+    print(column_names[non_0_feature_idx][ordered_coef_idx])
+
+    # print corresponding coefficients
+    print(non_0_coefs[ordered_coef_idx])
 
 EN_feature_selection()
